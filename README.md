@@ -131,7 +131,7 @@ Jquery 的 Cookie 库：
 
 创建实时歌词显示 div ：
 ```
-<div id="nyarukoplayer_lrc"></div>
+<div id="nyarukoplayer_lrc" name="点此可以切换歌词语言"></div>
 ```
 
 ### 5.初始化

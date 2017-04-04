@@ -80,6 +80,8 @@ var nyarukoplayer_musicblock = "";
 //动画是否重播
 var nyarukoplayer_replay = true;
 //回调方法
+//动画开始播放
+var nyarukoplayerCallback_AnimateStart = null;
 //动画结束
 var nyarukoplayerCallback_AnimateEnd = null;
 //歌词结束
@@ -247,6 +249,9 @@ function nyarukoplayer_ready() {
     $("#nyarukoplayer_loading").remove();
     if ($("#nyarukoplayer") != 0) {
         nyarukoplayer_play();
+        if($.isFunction(nyarukoplayerCallback_AnimateStart)){
+            nyarukoplayerCallback_AnimateStart();
+        }
     } else {
         if (nyarukoplayer_consolelog) console.error("[NyarukoPlayer] Unable to play animation without importing related div.");
         $("#titlebox").css("background","transparent");
@@ -509,7 +514,7 @@ function nyarukoplayer_audioinit(lrc) {
         for(var i = 0; i < result.length; i++){
             var lang = result[i][1];
             if (lang == "") {
-                lang = ["　","　"];
+                lang = ["",""];
             } else {
                 lang = lang.split('|');
             }
