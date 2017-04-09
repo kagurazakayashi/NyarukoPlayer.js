@@ -152,6 +152,9 @@ nyarukoplayer_init 接受两个参数：
 
 在自己的 js 中添加代码。可用的代理方法列表：
 
+- 动画已就绪
+  - nyarukoplayerCallback_AnimateReady = function(autoplay){};
+  - autoplay: (bool)为配置文件中的设定。
 - 动画开始
   - nyarukoplayerCallback_AnimateStart = function(){};
 - 动画结束
@@ -211,6 +214,22 @@ function disablemedia() {
 }
 ```
 
+### 准备好后先不要播放,等待指令再播放
+
+1. 在配置文件中设置 "autoplay":false 。
+2. 实现代理方法 nyarukoplayerCallback_AnimateReady(autoplay) 。
+3. 在准备就绪后，这个方法会被调用。
+4. 在适当的时候，执行 nyarukoplayer_playnow() ，将立即开始播放。
+
+例如，以下写法与自动播放同理：
+```
+nyarukoplayerCallback_AnimateReady = function(autoplay) {
+    if (autoplay == false) { //如果设置的不是自动播放，
+        nyarukoplayer_playnow(); //就手动执行播放方法。
+    }
+}
+```
+
 ## 配置文件示例
 
 ### JSON 配置文件示例
@@ -224,6 +243,7 @@ function disablemedia() {
         "imgtype":"jpg", //主图片扩展名，读取时会用此扩展名，例如 "1.jpg"。
         "webp":true, //WEBP支持，如果检测到浏览器可用 webp ，则优先读取 webp 扩展名，例如 "1.webp"。
         "replay":false, //动画结束后自动重播
+        "autoplay":true, //动画准备好后直接播放
         "imgdir":"indexpage/", //图片路径(文件夹)，读取时会例如 "indexpage/1.jpg"。
         "musicbtnimg":"indexpage/btn_audio.png", //音乐播放暂停按钮图片路径
         "lrcfile":"indexpage/nyaruko.lrc", //歌词文件路径

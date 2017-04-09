@@ -102,6 +102,8 @@ var nyarukoplayerCallback_Error = null; //参数:msg
 var nyarukoplayerCallback_MusicPlay = null;
 //音乐暂停
 var nyarukoplayerCallback_MusicPause = null;
+//动画已就绪
+var nyarukoplayerCallback_AnimateReady = null; //参数:autoplay
 
 //PRIVATE:
 var nyarukoplayer_imgcache = [];
@@ -119,6 +121,7 @@ var nyarukoplayer_webpok = false;
 var nyarukoplayer_lrctimer = null;
 var nyarukoplayer_lrctimers = "";
 var nyarukoplayer_lrctimeri = 0;
+var nyarukoplayer_autoplay = true;
 function nyarukoplayer_init(configurationFile,OutputLogSwitch = true) {
     nyarukoplayer_conffile = configurationFile;
     nyarukoplayer_consolelog = OutputLogSwitch;
@@ -146,6 +149,7 @@ function nyarukoplayer_init(configurationFile,OutputLogSwitch = true) {
                 nyarukoplayer_musicfile = conf["musicfile"];
                 nyarukoplayer_musicblock = conf["musicblock"];
                 nyarukoplayer_replay = conf["replay"];
+                nyarukoplayer_autoplay = conf["autoplay"];
                 var items = json[1];
                 datdatacount = items.length;
                 if (nyarukoplayer_consolelog) console.log("[NyarukoPlayer] Download configuration. "+datdatacount+": "+xhr.status+": "+xhr.statusText);
@@ -245,12 +249,20 @@ function nyarukoplayer_animationinit(data) {
         nyarukoplayer_resizeendimg();
     });
 }
+function nyarukoplayer_playnow() {
+    nyarukoplayer_play();
+    if($.isFunction(nyarukoplayerCallback_AnimateStart)){
+        nyarukoplayerCallback_AnimateStart();
+    }
+}
 function nyarukoplayer_ready() {
     $("#nyarukoplayer_loading").remove();
     if ($("#nyarukoplayer") != 0) {
-        nyarukoplayer_play();
-        if($.isFunction(nyarukoplayerCallback_AnimateStart)){
-            nyarukoplayerCallback_AnimateStart();
+        if($.isFunction(nyarukoplayerCallback_AnimateReady)){
+            nyarukoplayerCallback_AnimateReady(nyarukoplayer_autoplay);
+        }
+        if (nyarukoplayer_autoplay) {
+            nyarukoplayer_playnow();
         }
     } else {
         if (nyarukoplayer_consolelog) console.error("[NyarukoPlayer] Unable to play animation without importing related div.");
