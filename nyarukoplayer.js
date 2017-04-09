@@ -122,6 +122,7 @@ var nyarukoplayer_lrctimer = null;
 var nyarukoplayer_lrctimers = "";
 var nyarukoplayer_lrctimeri = 0;
 var nyarukoplayer_autoplay = true;
+var nyarukoplayer_musicready = false;
 function nyarukoplayer_init(configurationFile,OutputLogSwitch = true) {
     nyarukoplayer_conffile = configurationFile;
     nyarukoplayer_consolelog = OutputLogSwitch;
@@ -223,11 +224,16 @@ function nyarukoplayer_animationinit(data) {
                     //     nyarukoplayer_ready();
                     // }
                     //全部提示
-                    nyarukoplayer_musicdiglog_open();
+                    if (nyarukoplayer_autoplay) {
+                        nyarukoplayer_musicdiglog_open();
+                    } else {
+                        nyarukoplayer_musicready = true;
+                    }
                 } else {
                     if (nyarukoplayer_consolelog) console.error("[NyarukoPlayer] 没有导入相关 div 或 播放地区/语言限制，无法播放音频。");
                     nyarukoplayer_ready();
                 }
+                nyarukoplayer_preplay();
             }
         };
         nimg.onerror=function(){
@@ -250,17 +256,26 @@ function nyarukoplayer_animationinit(data) {
     });
 }
 function nyarukoplayer_playnow() {
-    nyarukoplayer_play();
+    if (nyarukoplayer_autoplay || nyarukoplayer_musicready) {
+        if (nyarukoplayer_musicdiglog_open() != 3) {
+            nyarukoplayer_play();
+        } else {
+            nyarukoplayer_autoplay = true;
+        }
+    }
     if($.isFunction(nyarukoplayerCallback_AnimateStart)){
         nyarukoplayerCallback_AnimateStart();
     }
 }
-function nyarukoplayer_ready() {
+function nyarukoplayer_preplay() {
     $("#nyarukoplayer_loading").remove();
+    if (nyarukoplayer_consolelog) console.log("[NyarukoPlayer] Ready.");
+    if($.isFunction(nyarukoplayerCallback_AnimateReady)){
+        nyarukoplayerCallback_AnimateReady(nyarukoplayer_autoplay);
+    }
+}
+function nyarukoplayer_ready() {
     if ($("#nyarukoplayer") != 0) {
-        if($.isFunction(nyarukoplayerCallback_AnimateReady)){
-            nyarukoplayerCallback_AnimateReady(nyarukoplayer_autoplay);
-        }
         if (nyarukoplayer_autoplay) {
             nyarukoplayer_playnow();
         }
@@ -618,15 +633,27 @@ function nyarukoplayer_disable(val = false) {
     $.cookie('disable', val, { expires: 365 });
     location.reload(false);
 }
+function nyarukoplayer_musicdiglog_close() {
+    $('#nyarukoplayer_musicdiglog').animate({
+        "left":"200%"
+    },1000,function () {
+        $('#nyarukoplayer_musicdiglog').remove();
+    });
+}
 function nyarukoplayer_musicdiglog_open() {
+    if ($('#nyarukoplayer_musicdiglog').length != 0) {
+        return -1;
+    }
     var isiOS = !!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
     if (!isiOS && $.cookie('playmusic') == "1") {
         nyarukoplayer_playmusic(true);
-        $("#nyarukoplayer_musicdiglog").remove();
+        nyarukoplayer_musicdiglog_close();
         nyarukoplayer_ready();
+        return 1;
     } else if (!isiOS && $.cookie('playmusic') == "2") {
-        $("#nyarukoplayer_musicdiglog").remove();
+        nyarukoplayer_musicdiglog_close();
         nyarukoplayer_ready();
+        return 2;
     } else {
         var bodyhtml = '<div id="nyarukoplayer_musicdiglog"><h1>要开启背景音乐吗？</h1><p><a id="nyarukoplayer_musicdiglog_yes">播放(推荐)</a></p><p><a id="nyarukoplayer_musicdiglog_no">不要播放</a></p>';
         if (!isiOS) {
@@ -639,16 +666,19 @@ function nyarukoplayer_musicdiglog_open() {
                 $.cookie('playmusic', "1", { expires: 1 });
             }
             nyarukoplayer_playmusic(true);
-            $("#nyarukoplayer_musicdiglog").remove();
+            nyarukoplayer_musicdiglog_close();
             nyarukoplayer_ready();
+            nyarukoplayer_play();
         });
         $("#nyarukoplayer_musicdiglog_no").click(function(){
             if (!isiOS && $("#nyarukoplayer_musicdiglog_save").prop("checked")) {
                 $.cookie('playmusic', "2", { expires: 1 });
             }
-            $("#nyarukoplayer_musicdiglog").remove();
+            nyarukoplayer_musicdiglog_close();
             nyarukoplayer_ready();
+            nyarukoplayer_play();
         });
+        return 3;
     }
 }
 function nyarukoplayer_checkWebpSupport() {
