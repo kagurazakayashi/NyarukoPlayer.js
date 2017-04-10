@@ -8,7 +8,7 @@
 ### 配置存储特性
 - 使用单独的 JSON 存储全局配置，包括：
   - 图片与动画：每张背景图片的名称、尺寸、动画起始位置、动画结束位置。
-  - 脚本的参数：
+  - 脚本的参数：初始歌词语言、歌词偏移时间、标题栏歌词、主图片扩展名、WEBP支持、图片路径、音乐按钮图片路径、歌词文件路径、音频文件路径、音频语言限制、动画是否重播。
 - 使用 Cookie 存储用户配置，包括：
   - 可以指定某个语言环境下不加载背景音乐，允许使用 Cookie 临时禁用。
   - 可以通过 Cookie 允许和禁用此脚本的功能（例如可以让用户在他们的流量计费设备上不加载这些图片和音乐）。
@@ -230,6 +230,8 @@ nyarukoplayerCallback_AnimateReady = function(autoplay) {
 }
 ```
 
+- nyarukoplayer_playnow() 如果返回 false ，表示 NyarukoPlayer 还没有加载完毕，将在加载完毕后再自动开始播放。不要执行两次这个方法。
+
 ## 配置文件示例
 
 ### JSON 配置文件示例
@@ -297,7 +299,7 @@ nyarukoplayerCallback_AnimateReady = function(autoplay) {
 ```
 
 ## 许可协议
-Apache.
+MIT License.
 
 ```
                    ,;;77;

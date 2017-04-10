@@ -123,6 +123,7 @@ var nyarukoplayer_lrctimers = "";
 var nyarukoplayer_lrctimeri = 0;
 var nyarukoplayer_autoplay = true;
 var nyarukoplayer_musicready = false;
+var nyarukoplayer_waitload = false;
 function nyarukoplayer_init(configurationFile,OutputLogSwitch = true) {
     nyarukoplayer_conffile = configurationFile;
     nyarukoplayer_consolelog = OutputLogSwitch;
@@ -234,6 +235,9 @@ function nyarukoplayer_animationinit(data) {
                     nyarukoplayer_ready();
                 }
                 nyarukoplayer_preplay();
+                if (nyarukoplayer_waitload) {
+                    nyarukoplayer_playnow();
+                }
             }
         };
         nimg.onerror=function(){
@@ -256,6 +260,10 @@ function nyarukoplayer_animationinit(data) {
     });
 }
 function nyarukoplayer_playnow() {
+    if (nyarukoplayer_loaded != nyarukoplayer_count) {
+        nyarukoplayer_waitload = true;
+        return false;
+    }
     if (nyarukoplayer_autoplay || nyarukoplayer_musicready) {
         if (nyarukoplayer_musicdiglog_open() != 3) {
             nyarukoplayer_play();
@@ -266,6 +274,7 @@ function nyarukoplayer_playnow() {
     if($.isFunction(nyarukoplayerCallback_AnimateStart)){
         nyarukoplayerCallback_AnimateStart();
     }
+    return true;
 }
 function nyarukoplayer_preplay() {
     $("#nyarukoplayer_loading").remove();
