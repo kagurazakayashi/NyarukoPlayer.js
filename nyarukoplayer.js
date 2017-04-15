@@ -125,7 +125,8 @@ var nyarukoplayer_autoplay = true;
 var nyarukoplayer_musicready = false;
 var nyarukoplayer_waitload = false;
 var nyarukoplayer_playd = false;
-var nyarukoplayer_cplaynow = false;
+var nyarukoplayer_retaincount = 0;
+
 function nyarukoplayer_init(configurationFile,OutputLogSwitch = true) {
     nyarukoplayer_conffile = configurationFile;
     nyarukoplayer_consolelog = OutputLogSwitch;
@@ -335,7 +336,14 @@ function nyarukoplayer_error(msg = "一些资源加载失败，请稍后刷新�
         nyarukoplayerCallback_Error(msg);
     }
 }
-function nyarukoplayer_play() {
+function nyarukoplayer_play(back = false) {
+    if (!back) {
+        if (nyarukoplayer_retaincount == 0) {
+            nyarukoplayer_retaincount++;
+        } else {
+            return;
+        }
+    }
     var screenwidth = document.body.clientWidth;
     var screenheight = document.body.clientHeight;
     $("#nyarukoplayer").append('<div class="nyarukodiv"></div>');
@@ -355,7 +363,7 @@ function nyarukoplayer_play() {
         if (nyarukoplayer_now < nyarukoplayer_count-1) {
             nyarukoplayer_now++;
             nyarukodiv.remove();
-            nyarukoplayer_play();
+            nyarukoplayer_play(true);
         } else {
             if (nyarukoplayer_consolelog) console.log("[NyarukoPlayer] Animate End.");
             if($.isFunction(nyarukoplayerCallback_AnimateEnd)){
@@ -364,7 +372,7 @@ function nyarukoplayer_play() {
             if (nyarukoplayer_replay) {
                 nyarukoplayer_now = 0;
                 nyarukodiv.remove();
-                nyarukoplayer_play();
+                nyarukoplayer_play(true);
             }
         }
     });
@@ -379,7 +387,7 @@ function nyarukoplayer_frame(position,imgwidth,imgheight,screenwidth,screenheigh
     if (position == "L") { //左
         x = 0;
         w = imgwh * screenheight;
-        if(w < screenwidth){1
+        if(w < screenwidth){
             w = screenwidth;
         }
         h = w/imgwh;
@@ -673,7 +681,7 @@ function nyarukoplayer_musicdiglog_close() {
     });
 }
 function nyarukoplayer_musicdiglog_open() {
-    if ($('#nyarukoplayer_musicdiglog').length != 0) {
+    if ($('#nyarukoplayer_musicdiglog').length != 0 || nyarukoplayer_playd) {
         return -1;
     }
     var isiOS = !!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
