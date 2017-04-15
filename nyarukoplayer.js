@@ -125,6 +125,7 @@ var nyarukoplayer_autoplay = true;
 var nyarukoplayer_musicready = false;
 var nyarukoplayer_waitload = false;
 var nyarukoplayer_playd = false;
+var nyarukoplayer_cplaynow = false;
 function nyarukoplayer_init(configurationFile,OutputLogSwitch = true) {
     nyarukoplayer_conffile = configurationFile;
     nyarukoplayer_consolelog = OutputLogSwitch;
@@ -237,7 +238,7 @@ function nyarukoplayer_animationinit(data) {
                 }
                 nyarukoplayer_preplay();
                 if (nyarukoplayer_waitload) {
-                    nyarukoplayer_playnow();
+                    nyarukoplayer_playnow(false);
                 }
             }
         };
@@ -260,18 +261,19 @@ function nyarukoplayer_animationinit(data) {
         nyarukoplayer_resizeendimg();
     });
 }
-function nyarukoplayer_playnow() {
+function nyarukoplayer_playnow(cplaynow = true) {
+    nyarukoplayer_cplaynow = cplaynow;
     if (nyarukoplayer_loaded == 0 || nyarukoplayer_loaded != nyarukoplayer_count) {
         nyarukoplayer_waitload = true;
         return false;
     }
     if (nyarukoplayer_autoplay || nyarukoplayer_musicready) {
         if (nyarukoplayer_musicdiglog_open() != 3) {
-            if (nyarukoplayer_consolelog) console.log("[NyarukoPlayer] Image Play.");
             if (nyarukoplayer_playd) {
                 if (nyarukoplayer_consolelog) console.log("[NyarukoPlayer] Has started, no need to start again.");
                 return;
             }
+            if (nyarukoplayer_consolelog) console.log("[NyarukoPlayer] Image Play.");
             nyarukoplayer_playd = true;
             nyarukoplayer_play();
         } else {
@@ -293,7 +295,7 @@ function nyarukoplayer_preplay() {
 function nyarukoplayer_ready() {
     if ($("#nyarukoplayer") != 0) {
         if (nyarukoplayer_autoplay) {
-            nyarukoplayer_playnow();
+            nyarukoplayer_playnow(false);
         }
     } else {
         if (nyarukoplayer_consolelog) console.error("[NyarukoPlayer] Unable to play animation without importing related div.");
@@ -301,19 +303,27 @@ function nyarukoplayer_ready() {
     }
 }
 function nyarukoplayer_playmusic(play) {
+    if (nyarukoplayer_playd && nyarukoplayer_cplaynow) {
+        nyarukoplayer_cplaynow = false;
+        return;
+    }
     if (play) {
-        if (nyarukoplayer_consolelog) console.log("[NyarukoPlayer] Music Play.");
-        $("#nyarukoplayer_audiodiv").css("animation","change 2s linear infinite");
-        document.getElementById("nyarukoplayer_musiccontrol").play();
-        if($.isFunction(nyarukoplayerCallback_MusicPlay)){
-            nyarukoplayerCallback_MusicPlay();
+        if (document.getElementById("nyarukoplayer_musiccontrol").paused) {
+            if (nyarukoplayer_consolelog) console.log("[NyarukoPlayer] Music Play.");
+            $("#nyarukoplayer_audiodiv").css("animation","change 2s linear infinite");
+            document.getElementById("nyarukoplayer_musiccontrol").play();
+            if($.isFunction(nyarukoplayerCallback_MusicPlay)){
+                nyarukoplayerCallback_MusicPlay();
+            }
         }
     } else {
-        if (nyarukoplayer_consolelog) console.log("[NyarukoPlayer] Music Pause.");
-        $("#nyarukoplayer_audiodiv").css("animation","none");
-        document.getElementById("nyarukoplayer_musiccontrol").pause();
-        if($.isFunction(nyarukoplayerCallback_MusicPause)){
-            nyarukoplayerCallback_MusicPause();
+        if (!document.getElementById("nyarukoplayer_musiccontrol").paused) {
+            if (nyarukoplayer_consolelog) console.log("[NyarukoPlayer] Music Pause.");
+            $("#nyarukoplayer_audiodiv").css("animation","none");
+            document.getElementById("nyarukoplayer_musiccontrol").pause();
+            if($.isFunction(nyarukoplayerCallback_MusicPause)){
+                nyarukoplayerCallback_MusicPause();
+            }
         }
     }
 }
@@ -607,7 +617,13 @@ var nyarukoplayer_lrctimeri = 0;
                             lrcdiv.fadeTo(200,0,function() {
                                 nyarukoplayer_lrctimers = nowlrc;
                                 lrcdiv.text("");
-                                nyarukoplayer_lrctimer = setInterval(function(){  
+                                nyarukoplayer_lrctimer = setInterval(function(){
+                                    if(document.getElementById("nyarukoplayer_musiccontrol").paused) {
+                                        clearInterval(nyarukoplayer_lrctimer);
+                                        nyarukoplayer_lrctimeri = 0;
+                                        nyarukoplayer_lrctimers = "";
+                                        return;
+                                    }
                                     lrcdiv.append(nyarukoplayer_lrctimers.charAt(nyarukoplayer_lrctimeri));  
                                     if(nyarukoplayer_lrctimeri ++ === nyarukoplayer_lrctimers.length){  
                                         clearInterval(nyarukoplayer_lrctimer);
@@ -707,7 +723,7 @@ function nyarukoplayer_checkWebpSupport() {
 function nyarukoplayer_browserok() {
     var brow = navigator.userAgent.toLowerCase();
     var bInfo="";
-    if(/msie/.test(brow)){bInfo="IE";}
+    if(/ie/.test(brow)){bInfo="IE";}
     if(/opera/.test(brow)){bInfo="Opera";}
     if (bInfo=="") {return null;}
     return "抱歉,暂不支持"+bInfo+",建议使用最新版Chrome。";
