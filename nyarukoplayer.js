@@ -126,6 +126,7 @@ var nyarukoplayer_musicready = false;
 var nyarukoplayer_waitload = false;
 var nyarukoplayer_playd = false;
 var nyarukoplayer_retaincount = 0;
+var nyarukoplayer_errord = false;
 
 function nyarukoplayer_init(configurationFile,OutputLogSwitch = true) {
     nyarukoplayer_conffile = configurationFile;
@@ -211,7 +212,7 @@ function nyarukoplayer_animationinit(data) {
             var progress = nyarukoplayer_loaded / nyarukoplayer_count * 100;
             if (nyarukoplayer_consolelog) console.log("Loading... "+nyarukoplayer_loaded+"/"+nyarukoplayer_count+" : "+progress+"%");
             var nyarukoplayer_loadingok = $("#nyarukoplayer_loadingok");
-            nyarukoplayer_loadingok.html("载入中 "+progress.toFixed(0)+"%");
+            if (!nyarukoplayer_errord) nyarukoplayer_loadingok.html("载入中 "+progress.toFixed(0)+"%");
             nyarukoplayer_loadingok.css("width",progress+"%");
             if (nyarukoplayer_loaded == nyarukoplayer_count) {
                 if (nyarukoplayer_consolelog) console.log("[NyarukoPlayer] Image Loaded.");
@@ -329,6 +330,7 @@ function nyarukoplayer_playmusic(play) {
     }
 }
 function nyarukoplayer_error(msg = "一些资源加载失败，请稍后刷新再试。") {
+    nyarukoplayer_errord = true;
     $("#nyarukoplayer_loadingok").css({"width":"100%","background-color":"#FF0033","background":"linear-gradient(#FF6666, #FF0033)","text-align":"center"});
     $("#nyarukoplayer_loadingok").html(msg);
     $("#titlebox").css("background","transparent");

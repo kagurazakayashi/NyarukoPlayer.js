@@ -1,0 +1,1 @@
+closure-compiler --js nyarukoplayer.js --js_output_file nyarukoplayer.min.js
