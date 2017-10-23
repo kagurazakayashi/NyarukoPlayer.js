@@ -249,7 +249,7 @@ function nyarukoplayer_animationinit(data) {
             nyarukoplayer_error();
         };
     });
-    if (nyarukoplayer_lrcfile) {
+    if (nyarukoplayer_lrcfile && nyarukoplayer_musicfile) {
         if (nyarukoplayer_consolelog) console.log("[NyarukoPlayer] Downloading lyric...");
         $.ajax({
             url: nyarukoplayer_lrcfile,
@@ -346,8 +346,6 @@ function nyarukoplayer_play(back = false) {
             return;
         }
     }
-    var screenwidth = document.body.clientWidth;
-    var screenheight = document.body.clientHeight;
     $("#nyarukoplayer").append('<div class="nyarukodiv"></div>');
     var nyarukodiv = $(".nyarukodiv");
     var nimg = nyarukoplayer_imgcache[nyarukoplayer_now];
@@ -357,8 +355,8 @@ function nyarukoplayer_play(back = false) {
     var nfrom = nyarukoplayer_from[nyarukoplayer_now];
     var nto = nyarukoplayer_to[nyarukoplayer_now];
     var ntime = nyarukoplayer_time[nyarukoplayer_now] * 1000;
-    var nfromcss = nyarukoplayer_frame(nfrom,imgwidth,imgheight,screenwidth,screenheight);
-    var ntocss = nyarukoplayer_frame(nto,imgwidth,imgheight,screenwidth,screenheight);
+    var nfromcss = nyarukoplayer_frame(nfrom,imgwidth,imgheight);
+    var ntocss = nyarukoplayer_frame(nto,imgwidth,imgheight);
     nyarukodiv.css({"left":nfromcss[0],"top":nfromcss[1],"width":nfromcss[2],"height":nfromcss[3]});
     nyarukodiv.animate({"left":ntocss[0],"top":ntocss[1],"width":ntocss[2],"height":ntocss[3]},ntime,function(){
         if (nyarukoplayer_consolelog) console.log("[NyarukoPlayer] IMG "+(nyarukoplayer_now+1)+"/"+nyarukoplayer_count);
@@ -379,8 +377,9 @@ function nyarukoplayer_play(back = false) {
         }
     });
 }
-function nyarukoplayer_frame(position,imgwidth,imgheight,screenwidth,screenheight) {
-    $("#nyarukoplayer").css({"width":screenwidth,"height":screenheight});
+function nyarukoplayer_frame(position,imgwidth,imgheight) {
+    var screenwidth = $("#nyarukoplayer").width();
+    var screenheight = $("#nyarukoplayer").height();
     var x = 0;
     var y = 0;
     var w = 0;

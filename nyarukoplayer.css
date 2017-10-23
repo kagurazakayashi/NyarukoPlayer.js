@@ -3,25 +3,26 @@
     height: 100%;
 }
 .nyarukodiv {
-    position: fixed;
+    position: relative;
     overflow: hidden;
     user-select: none;
 }
 #nyarukoplayer_def {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    top: 0px;
-    left: 0px;
-}
-#nyarukoplayer {
-    position: fixed;
-    left: 0;
-    top: 0;
+    position: absolute;
+    left: 0%;
+    top: 0%;
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background:#7093DB url("bg.jpg") no-repeat left top;
+}
+#nyarukoplayer {
+    position: absolute;
+    left: 0%;
+    top: 0%;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background:purple url("bg.jpg") no-repeat left top;
     background-size: 100% 100%;
 }
 #nyarukoplayer_audiodiv {
