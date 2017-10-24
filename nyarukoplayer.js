@@ -437,13 +437,25 @@ function nyarukoplayer_frame(position,imgwidth,imgheight) {
             x = (screenwidth - w)/2;
             y = (screenheight - h)/2;
         }
+    } else if (position == "S") { //小
+        var cw = screenwidth - imgwidth;
+        var ch = screenheight - imgheight;
+        if(cw > ch){
+            w = screenwidth*0.8;
+            h = w/imgwh;
+            x = (screenwidth - w)/2;
+            y = (screenheight - h)/2;
+        }else{
+            h = screenheight*0.8;
+            w = h*imgwh;
+            x = (screenwidth - w)/2;
+            y = (screenheight - h)/2;
+        }
     }
     if (nyarukoplayer_consolelog) console.log(x+","+y+","+w+","+h+","+imgwh);
     return [x,y,w,h];
 }
 function nyarukoplayer_resizeendimg() {
-    var screenwidth = $(window).width();
-    var screenheight = $(window).height();
     var imgwidth = nyarukoplayer_width[nyarukoplayer_now];
     var imgheight = nyarukoplayer_height[nyarukoplayer_now];
     var ccss = nyarukoplayer_imgcenter(imgwidth,imgheight,screenwidth,screenheight);
@@ -451,10 +463,11 @@ function nyarukoplayer_resizeendimg() {
     y = ccss[1];
     w = ccss[2];
     h = ccss[3];
-    // if (nyarukoplayer_consolelog) console.log(cw+","+ch+","+screenwidth+","+imgwidth+","+screenheight+","+imgheight+","+imgwh+","+(cw/ch));
     $(".nyarukodiv").css({"left":x,"top":y,"width":w,"height":h});
 }
 function nyarukoplayer_imgcenter(imgwidth,imgheight,screenwidth,screenheight) {
+    var screenwidth = $("#nyarukoplayer").width();
+    var screenheight = $("#nyarukoplayer").height();
     var x = 0;
     var y = 0;
     var w = 0;
@@ -516,7 +529,7 @@ function nyarukoplayer_audioinit(lrc) {
         var musicblock = nyarukoplayer_musicblock.split('|');
         for(var i = 0; i < musicblock.length; i++){
             if (musicblock[i] == lang) {
-                if (nyarukoplayer_consolelog) console.warn("[NyarukoPlayer] このページはお住まいの地域からご利用になれません Cannot use this page from the area to live");
+                if (nyarukoplayer_consolelog) console.warn("[NyarukoPlayer] 对不起，您所在的地区不能播放这首背景音乐 このページはお住まいの地域からご利用になれません Cannot use this page from the area to live");
                 $("#nyarukoplayer_audiodiv").remove();
                 if($.isFunction(nyarukoplayerCallback_MusicLanguageblock)){
                     nyarukoplayerCallback_MusicLanguageblock();  
@@ -528,8 +541,7 @@ function nyarukoplayer_audioinit(lrc) {
     $("#nyarukoplayer_musiccontrol").html('<source src="'+nyarukoplayer_musicfile+'" />');
     var audio = document.getElementById("nyarukoplayer_musiccontrol");
     var audiodiv = $("#nyarukoplayer_audiodiv");
-    audio.load();
-    audio.pause();
+    setTimeout(function(){audio.pause();},100);
     audiodiv.click(function(){
         //event.stopPropagation();
         if(document.getElementById("nyarukoplayer_musiccontrol").paused)
@@ -687,13 +699,17 @@ function nyarukoplayer_musicdiglog_open() {
     }
     var isiOS = !!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
     if (!isiOS && $.cookie('playmusic') == "1") {
-        nyarukoplayer_playmusic(true);
-        nyarukoplayer_musicdiglog_close();
-        nyarukoplayer_ready();
+        setTimeout(function(){
+            nyarukoplayer_playmusic(true);
+            nyarukoplayer_musicdiglog_close();
+            nyarukoplayer_ready();
+        },500);
         return 1;
     } else if (!isiOS && $.cookie('playmusic') == "2") {
-        nyarukoplayer_musicdiglog_close();
-        nyarukoplayer_ready();
+        setTimeout(function(){
+            nyarukoplayer_musicdiglog_close();
+            nyarukoplayer_ready();
+        },500);
         return 2;
     } else {
         var bodyhtml = '<div id="nyarukoplayer_musicdiglog"><h1>要开启背景音乐吗？</h1><p><a id="nyarukoplayer_musicdiglog_yes">播放(推荐)</a></p><p><a id="nyarukoplayer_musicdiglog_no">不要播放</a></p>';

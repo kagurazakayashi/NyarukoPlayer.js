@@ -33,7 +33,7 @@
   - 从上到下(U-D)
   - 从下到上(D-U)
   - 中心放大(C-B)
-  - ~~中心缩小(C-S)~~（尚未提供）
+  - 中心缩小(C-S)
 - 以保持图片适配填充背景为优先，如果当前网页显示区域比例和图片比例相等，将不产生动画。
 - 网页切到后台背景图片动画将自动暂停。
 
@@ -185,6 +185,14 @@ nyarukoplayerCallback_AnimateEnd = function() {
     $("#titlebox").css("background","transparent");
 }
 ```
+
+### 7.更改布局(可选步骤)
+
+默认情况下图片动画区域会网页全屏显示，你可以通过修改 `nyarukoplayer.css` ，来调整显示效果。
+
+- 变更 `#nyarukoplayer` 和 `#nyarukoplayer_def` 的定位和尺寸可以修改图片动画区域的定位。
+- 变更 `#nyarukoplayer` 的 `background` `url("bg.jpg")` 为你自己的图片，它将在动画载入之前和动画结束之后显示一张静态图片。
+- 变更 `#nyarukoplayer_audiodiv` 的 `position` 为 `relative` ，并将 html 中的 `<div id="nyarukoplayer_audiodiv">` 移动到 `<div id="nyarukoplayer_def"></div>` 之中，可以修改音乐播放按钮的位置不再始终在页面右上方。
 
 ## 其他技巧
 ### 让切出网页后标题栏自动显示歌词
