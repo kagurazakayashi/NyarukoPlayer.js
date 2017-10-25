@@ -456,6 +456,8 @@ function nyarukoplayer_frame(position,imgwidth,imgheight) {
     return [x,y,w,h];
 }
 function nyarukoplayer_resizeendimg() {
+    var screenwidth = $("#nyarukoplayer").width();
+    var screenheight = $("#nyarukoplayer").height();
     var imgwidth = nyarukoplayer_width[nyarukoplayer_now];
     var imgheight = nyarukoplayer_height[nyarukoplayer_now];
     var ccss = nyarukoplayer_imgcenter(imgwidth,imgheight,screenwidth,screenheight);
@@ -693,9 +695,19 @@ function nyarukoplayer_musicdiglog_close() {
         $('#nyarukoplayer_musicdiglog').remove();
     });
 }
+function nyarukoplayer_musicdiglog_nomusic() {
+    setTimeout(function(){
+        nyarukoplayer_musicdiglog_close();
+        nyarukoplayer_ready();
+    },500);
+}
 function nyarukoplayer_musicdiglog_open() {
     if ($('#nyarukoplayer_musicdiglog').length != 0 || nyarukoplayer_playd) {
         return -1;
+    }
+    if (!(nyarukoplayer_lrcfile && nyarukoplayer_musicfile)) {
+        nyarukoplayer_musicdiglog_nomusic();
+        return 2;
     }
     var isiOS = !!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
     if (!isiOS && $.cookie('playmusic') == "1") {
@@ -706,10 +718,7 @@ function nyarukoplayer_musicdiglog_open() {
         },500);
         return 1;
     } else if (!isiOS && $.cookie('playmusic') == "2") {
-        setTimeout(function(){
-            nyarukoplayer_musicdiglog_close();
-            nyarukoplayer_ready();
-        },500);
+        nyarukoplayer_musicdiglog_nomusic();
         return 2;
     } else {
         var bodyhtml = '<div id="nyarukoplayer_musicdiglog"><h1>要开启背景音乐吗？</h1><p><a id="nyarukoplayer_musicdiglog_yes">播放(推荐)</a></p><p><a id="nyarukoplayer_musicdiglog_no">不要播放</a></p>';
