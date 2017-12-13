@@ -182,7 +182,7 @@ function nyarukoplayer_animationinit(data) {
         return;
     }
     nyarukoplayer_webpok = nyarukoplayer_checkWebpSupport();
-    if ($.cookie("disable") == "true") {
+    if ($.isFunction($.cookie) && $.cookie("disable") == "true") {
         if (nyarukoplayer_consolelog) console.warn("[NyarukoPlayer] Disabled by cookie.");
         $("#nyarukoplayer_loading").remove();
         $("#titlebox").css("background","transparent");
@@ -519,14 +519,14 @@ function nyarukoplayer_imgcenter(imgwidth,imgheight,screenwidth,screenheight) {
     return [x,y,w,h];
 }
 function nyarukoplayer_audioinit(lrc) {
-    if ($.cookie("disable") == "true") {
+    if ($.isFunction($.cookie) && $.cookie("disable") == "true") {
         if (nyarukoplayer_consolelog) console.log("[NyarukoPlayer] Disabled by user.");
         if($.isFunction(nyarukoplayerCallback_MusicDisabled)){
             nyarukoplayerCallback_MusicDisabled();  
         }
         return;
     }
-    if (nyarukoplayer_musicblock != "" && $.cookie('nochkarea') != 'true') {
+    if (nyarukoplayer_musicblock != "" && $.isFunction($.cookie) && $.cookie('nochkarea') != 'true') {
         var lang = navigator.language.substr(0,2);
         var musicblock = nyarukoplayer_musicblock.split('|');
         for(var i = 0; i < musicblock.length; i++){
@@ -666,11 +666,11 @@ function nyarukoplayer_audioinit(lrc) {
     }
 }
 function nyarukoplayer_nochkarea(val = false) {
-    $.cookie('nochkarea', val, { expires: 365 });
+    if ($.isFunction($.cookie)) $.cookie('nochkarea', val, { expires: 365 });
     location.reload(false);
 }
 function nyarukoplayer_disable(val = false) {
-    $.cookie('disable', val, { expires: 365 });
+    if ($.isFunction($.cookie)) $.cookie('disable', val, { expires: 365 });
     location.reload(false);
 }
 function nyarukoplayer_musicdiglog_close() {
@@ -695,14 +695,14 @@ function nyarukoplayer_musicdiglog_open() {
         return 2;
     }
     var isiOS = !!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
-    if (!isiOS && $.cookie('playmusic') == "1") {
+    if (!isiOS && $.isFunction($.cookie) && $.cookie('playmusic') == "1") {
         setTimeout(function(){
             nyarukoplayer_playmusic(true);
             nyarukoplayer_musicdiglog_close();
             nyarukoplayer_ready();
         },500);
         return 1;
-    } else if (!isiOS && $.cookie('playmusic') == "2") {
+    } else if (!isiOS && $.isFunction($.cookie) && $.cookie('playmusic') == "2") {
         nyarukoplayer_musicdiglog_nomusic();
         return 2;
     } else {
@@ -713,7 +713,7 @@ function nyarukoplayer_musicdiglog_open() {
         bodyhtml = bodyhtml + '</div>';
         $("body").append(bodyhtml);
         $("#nyarukoplayer_musicdiglog_yes").click(function(){
-            if (!isiOS && $("#nyarukoplayer_musicdiglog_save").prop("checked")) {
+            if (!isiOS && $.isFunction($.cookie) && $("#nyarukoplayer_musicdiglog_save").prop("checked")) {
                 $.cookie('playmusic', "1", { expires: 1 });
             }
             nyarukoplayer_playmusic(true);
@@ -722,7 +722,7 @@ function nyarukoplayer_musicdiglog_open() {
             nyarukoplayer_play();
         });
         $("#nyarukoplayer_musicdiglog_no").click(function(){
-            if (!isiOS && $("#nyarukoplayer_musicdiglog_save").prop("checked")) {
+            if (!isiOS && $.isFunction($.cookie) && $("#nyarukoplayer_musicdiglog_save").prop("checked")) {
                 $.cookie('playmusic', "2", { expires: 1 });
             }
             nyarukoplayer_musicdiglog_close();
